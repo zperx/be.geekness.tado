@@ -1,0 +1,140 @@
+{
+    "id": "com.tado",
+    "name": {
+        "en": "Tado"
+    },
+    "version": "0.1.0",
+    "compatibility": "0.8",
+    "author": {
+        "name": "Athom B.V.",
+        "website": "https://www.athom.com"
+    },
+    "description": {
+        "en": "The Smart Thermostat for your Heating System"
+    },
+    "category": "climate",
+    "images": {
+        "large": "assets/images/large.jpg",
+        "small": "assets/images/small.jpg"
+    },
+    "drivers": [
+        {
+            "id": "tado",
+            "name": {
+                "en": "Tado"
+            },
+            "class": "thermostat",
+            "capabilities": [ "target_temperature", "measure_temperature" ],
+            "images": {
+                "large": "drivers/tado/assets/images/large.png",
+                "small": "drivers/tado/assets/images/small.png"
+            },
+            "pair": [
+                {
+                    "id": "start"
+                },
+                {
+                    "id": "list_devices",
+                    "template": "list_devices",
+                    "navigation": {
+                        "next": "add_tado"
+                    }
+                },
+                {
+                    "id": "add_tado",
+                    "template": "add_devices"
+                }
+            ]
+        }
+    ],
+    "flow": {
+        "triggers": [
+            {
+                "id": "outside_temperature",
+                "title": {
+                    "en": "Outside temp changed"
+                },
+                "tokens": [
+                    {
+                        "name": "temperature",
+                        "title": {
+                            "en": "temp"
+                        },
+                        "example": {
+                            "en": "18"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "solar_intensity",
+                "title": {
+                    "en": "Solar intensity changed"
+                },
+                "tokens": [
+                    {
+                        "name": "intensity",
+                        "title": {
+                            "en": "intensity (%)"
+                        },
+                        "example": {
+                            "en": "50"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "weather",
+                "title": {
+                    "en": "Weather changed"
+                },
+                "tokens": [
+                    {
+                        "name": "state",
+                        "title": {
+                            "en": "state"
+                        },
+                        "example": {
+                            "en": "SUN, RAIN, <unknown>"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "weather_state",
+                "title": {
+                    "en": "Weather state changed to"
+                },
+                "tokens": [
+                    {
+                        "name": "state",
+                        "title": {
+                            "en": "state"
+                        },
+                        "example": {
+                            "en": "SUN, RAIN, <unknown>"
+                        }
+                    }
+                ],
+                "args": [
+                    {
+                        "name": "current_state",
+                        "type": "dropdown",
+                        "values": [ 
+                            { "id": "CLEAR", "label": { "en": "Clear (Night)" } },
+                            { "id": "NIGHT_CLOUDY", "label": { "en": "Cloudy (Night)" } },
+                            { "id": "CLOUDY_PARTLY", "label": { "en": "Cloudy (Partly)" } },
+                            { "id": "RAIN", "label": { "en": "Raining" } },
+                            { "id": "THUNDERSTORMS", "label": { "en": "Storming" } },
+                            { "id": "SUN", "label": { "en": "Sunny" } },
+                            { "id": "WINDY", "label": { "en": "Windy" } }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "dependencies": {
+        "request": "*"
+    }
+}

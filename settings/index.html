@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel='stylesheet' href='/manager/webserver/assets/css/style.css'>
+        <link rel='stylesheet' href='/css/style.css'>
+        <script type='text/javascript' src='/manager/webserver/assets/js/jquery.js'></script>
+        <script type='text/javascript' src='/manager/webserver/assets/js/jquery.ui.js'></script>
+    </head>
+    <body>
+
+        <h1>Tado login and password</h1>
+        <p>We need your Tado account to communicate with the https://my.tado.com website. Your account details will be stored on your Homey, and will only be sent to the Tado webserver. (This will probably change when Tado launches their public API)</p>
+
+        <fieldset>
+            <div class="field row">
+                <label for="login">Login</label>
+                <input id="login" type="text" value="" />
+            </div>
+            <div class="field row">
+                <label for="password">Password</label>
+                <input id="password" type="password" value="" />
+            </div>
+
+        </fieldset>
+
+        <button class="right" onclick="saveTado()">Save changes</button>
+
+        <script language="JavaScript">
+        function onHomeyReady(){
+            Homey.get('login', function( err, login ) {
+                document.getElementById('login').value = login;
+            });
+            Homey.ready();
+        }
+
+        function saveTado() {
+            Homey.set('login', document.getElementById('login').value);
+            Homey.set('password',  document.getElementById('password').value);
+            alert('Your settings have been saved, now you can add your Tado via Devices');
+        }
+        </script>
+
+    </body>
+</html>

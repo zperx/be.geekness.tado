@@ -1,0 +1,11 @@
+{
+    "pair": {
+        "start": {
+            "title": "Tado account details",
+            "add_title": "Enter your Tado login and password",
+            "add_text": "We need your Tado account to communicate with the https://my.tado.com website. Your account details will be stored on your Homey, and will only be sent to the Tado webserver. (This will probably change when Tado launches their public API)",
+            "add_button": "Add your Tado"
+        }
+    }
+}
+

@@ -43,7 +43,7 @@ var self = module.exports = {
     },
 
     deleted: function( device_data ) {
-        Homey.log('[TADO] Deleteing Tado ', device_data.id);
+        Homey.log('[TADO] Deleting Tado', device_data.id);
         delete devices[ device_data.id ];
     },
 
@@ -207,7 +207,7 @@ function getState( device_data, callback ) {
 
     getStateInternal( device_data );
 
-    getStateExternal( device_data);
+    getStateExternal( device_data );
 
 }
 

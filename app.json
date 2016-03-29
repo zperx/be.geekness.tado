@@ -6,8 +6,7 @@
     "version": "0.1.0",
     "compatibility": "0.8",
     "author": {
-        "name": "Athom B.V.",
-        "website": "https://www.athom.com"
+        "name": "HellHound"
     },
     "description": {
         "en": "The Smart Thermostat for your Heating System"

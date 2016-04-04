@@ -19,6 +19,14 @@ cd com.tado
 athom project --install
 ```
 
+## Configuration
+
+Go to the Homey settings for Tado, and enter your Tado login and password, this is the same account you use to access https://my.tado.com. This data is only saved locally on your Homey, and not shared with either me or Athom.
+
+## How does it work
+
+The Tado Homey app uses the unofficial my.tado.com API, and does not directly communicate with your Tado device. All data is sent over https, via https://my.tado.com.
+
 ## Flow
 
 ### Triggers (device)

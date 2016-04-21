@@ -2,30 +2,15 @@
 
 Unofficial Tado thermostat app for Homey.
 
-## Manual Installation from Source
-
-```sh
-# Install Homey development tools
-npm install -g athom-cli
-
-# Connect to your Homey
-athom login
-
-# Download Tado application
-git clone https://github.com/hellhond/be.geekness.tado.git
-
-# Install app on Homey
-cd com.tado
-athom project --install
-```
-
 ## Configuration
 
 Go to the Homey settings for Tado, and enter your Tado login and password, this is the same account you use to access https://my.tado.com. This data is only saved locally on your Homey, and not shared with either me or Athom.
 
+
 ## How does it work
 
 The Tado Homey app uses the unofficial my.tado.com API, and does not directly communicate with your Tado device. All data is sent over https, via https://my.tado.com.
+
 
 ## Flow
 
@@ -57,11 +42,13 @@ The Tado Homey app uses the unofficial my.tado.com API, and does not directly co
 - Set the temperature
 
 
+
 ## Bugs & Features
 
 If you find a bug, please use the Github Issue system for this repository to submit the details of your bug report.
 
 If you would like to have a new feature implemented, use the Github Issue system to submit your feature request.
+
 
 
 ## Legal

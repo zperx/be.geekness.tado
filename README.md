@@ -2,7 +2,7 @@
 
 Unofficial Tado thermostat app for Homey.
 
-## Installation
+## Manual Installation from Source
 
 ```sh
 # Install Homey development tools
@@ -12,7 +12,7 @@ npm install -g athom-cli
 athom login
 
 # Download Tado application
-git clone https://github.com/hellhond/com.tado.git
+git clone https://github.com/hellhond/be.geekness.tado.git
 
 # Install app on Homey
 cd com.tado

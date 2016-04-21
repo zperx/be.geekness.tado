@@ -1,4 +1,4 @@
-# com.tado
+# be.geekness.tado
 
 Unofficial Tado thermostat app for Homey.
 

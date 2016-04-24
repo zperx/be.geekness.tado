@@ -187,7 +187,9 @@ function getHomeId( device, callback ) {
     }, function(err, result, body){
         if (err) return callback(err);
 
-        callback( null, body.homes[0].id);
+        if (body.homes !== undefined) {
+            callback( null, body.homes[0].id);
+        }
     });
 }
 
@@ -216,16 +218,20 @@ function getStateInternal( device_data, callback ) {
     }, function(err, result, body){
         if ( err && callback ) return callback(err);
 
+        if (body.setting && body.setting.temperature) {
         // set state
-        var value = (body.setting.temperature.celsius * 2).toFixed() / 2;
-        if (devices[ device_data.id ].state.target_temperature != value) {
-            devices[ device_data.id ].state.target_temperature = value;
-            self.realtime( device_data, 'target_temperature', value );
+            var value = (body.setting.temperature.celsius * 2).toFixed() / 2;
+            if (devices[ device_data.id ].state.target_temperature != value) {
+                devices[ device_data.id ].state.target_temperature = value;
+                self.realtime( device_data, 'target_temperature', value );
+            }
         }
-        value = (body.sensorDataPoints.insideTemperature.celsius * 2).toFixed() / 2;
-        if (devices[ device_data.id ].state.measure_temperature != value) {
-            devices[ device_data.id ].state.measure_temperature = value;
-            self.realtime( device_data, 'measure_temperature', value );
+        if (body.sensorDataPoints && body.sensorDataPoints.insideTemperature) {
+            value = (body.sensorDataPoints.insideTemperature.celsius * 2).toFixed() / 2;
+            if (devices[ device_data.id ].state.measure_temperature != value) {
+                devices[ device_data.id ].state.measure_temperature = value;
+                self.realtime( device_data, 'measure_temperature', value );
+            }
         }
 
         if (callback) {
@@ -245,29 +251,35 @@ function getStateExternal( device_data, callback ) {
     }, function(err, result, body){
         if ( err && callback ) return callback(err);
 
+        if (body.outsideTemperature) {
         // set state
-        var value = (body.outsideTemperature.celsius * 2).toFixed() / 2;
-        if (devices[ device_data.id ].state.outside_temperature != value) {
-            devices[ device_data.id ].state.outside_temperature = value;
-            Homey.manager('flow').trigger('outside_temperature', { temperature: value });
-            Homey.manager('insights').createEntry( 'outside_temperature', value, new Date(), function(err, success){
-                if( err ) return Homey.error(err);
-            })
+            var value = (body.outsideTemperature.celsius * 2).toFixed() / 2;
+            if (devices[ device_data.id ].state.outside_temperature != value) {
+                devices[ device_data.id ].state.outside_temperature = value;
+                Homey.manager('flow').trigger('outside_temperature', { temperature: value });
+                Homey.manager('insights').createEntry( 'outside_temperature', value, new Date(), function(err, success){
+                    if( err ) return Homey.error(err);
+                })
+            }
         }
-        value = body.solarIntensity.percentage;
-        if (devices[ device_data.id ].state.solar_intensity != value) {
-            devices[ device_data.id ].state.solar_intensity = value;
-            Homey.manager('flow').trigger('solar_intensity', { intensity: value });
-            Homey.manager('insights').createEntry( 'solar_intensity', value, new Date(), function(err, success){
-                if( err ) return Homey.error(err);
-            })
+        if (body.solarIntensity) {
+            value = body.solarIntensity.percentage;
+            if (devices[ device_data.id ].state.solar_intensity != value) {
+                devices[ device_data.id ].state.solar_intensity = value;
+                Homey.manager('flow').trigger('solar_intensity', { intensity: value });
+                Homey.manager('insights').createEntry( 'solar_intensity', value, new Date(), function(err, success){
+                    if( err ) return Homey.error(err);
+                })
+            }
         }
-        value = body.weatherState.value;
-        if (devices[ device_data.id ].state.weather_state != value) {
-            devices[ device_data.id ].state.weather_state = value;
-            Homey.manager('flow').trigger('weather', { state: value });
-            Homey.manager('flow').trigger('weather_state', { state: value }, { state: value });
-            // RAIN, SUN, NIGHT_CLOUDY, ..
+        if (body.weatherState) {
+            value = body.weatherState.value;
+            if (devices[ device_data.id ].state.weather_state != value) {
+                devices[ device_data.id ].state.weather_state = value;
+                Homey.manager('flow').trigger('weather', { state: value });
+                Homey.manager('flow').trigger('weather_state', { state: value }, { state: value });
+                // RAIN, SUN, NIGHT_CLOUDY, ..
+            }
         }
 
         if (callback) {

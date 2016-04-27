@@ -15,7 +15,7 @@ var self = module.exports = {
             devices[ device_data.id ] = {
                 data    : device_data,
                 state   : {}
-            }
+            };
             getState( device_data );
         });
     
@@ -37,6 +37,42 @@ var self = module.exports = {
                 callback( null, false );
             }
         });
+
+        Homey.manager('flow').on('condition.weather_state', function( callback, args ) {
+            if (devices[0] !== undefined) {
+                if ( args.current_state == devices[0].state.weather_state ) {
+                    callback( null, true );
+                    return;
+                }
+            }
+            callback( null, false );
+        });
+
+		Homey.manager('flow').on('action.set_auto', function( callback, args ){
+            for (var i in devices) {
+                if (devices[i].data) {
+                    updateTado( devices[i].data, 'DELETE');
+                }
+            };
+
+    		callback( null, true ); 
+		});
+
+		Homey.manager('flow').on('action.set_off', function( callback, args ){
+            for (var i in devices) {
+                if (devices[i].data) {
+                    updateTado( devices[i].data, {
+           		        setting: {
+                	        type: "HEATING",
+                            power: "OFF",
+                        },
+                        termination: {type: "MANUAL"}
+                    });
+                }
+            };
+
+    		callback( null, true ); 
+		});
 
         callback();
 
@@ -85,7 +121,7 @@ var self = module.exports = {
                         termination: {type: "MANUAL"}
                     });
 
-                    self.realtime(device_data, 'target_temperature', target_temperature)
+                    self.realtime(device_data, 'target_temperature', target_temperature);
                 }
 
                 callback( null, device.state.target_temperature );
@@ -134,7 +170,7 @@ var self = module.exports = {
             initDevice( device.data, function( error ) {
             });
             callback( null, true );
-        })
+        });
 
         getAccessToken( function( err, access_token ) {
             if ( err ) log(err);
@@ -146,8 +182,7 @@ var self = module.exports = {
             socket.emit( 'authorized', true );
         });
     }
-
-}
+};
 
 function getAccessToken( callback ) {
     var login = Homey.manager('settings').get( 'login' );
@@ -218,9 +253,11 @@ function getStateInternal( device_data, callback ) {
     }, function(err, result, body){
         if ( err && callback ) return callback(err);
 
+        var value = null;
+
         if (body.setting && body.setting.temperature) {
         // set state
-            var value = (body.setting.temperature.celsius * 2).toFixed() / 2;
+            value = (body.setting.temperature.celsius * 2).toFixed() / 2;
             if (devices[ device_data.id ].state.target_temperature != value) {
                 devices[ device_data.id ].state.target_temperature = value;
                 self.realtime( device_data, 'target_temperature', value );
@@ -231,6 +268,16 @@ function getStateInternal( device_data, callback ) {
             if (devices[ device_data.id ].state.measure_temperature != value) {
                 devices[ device_data.id ].state.measure_temperature = value;
                 self.realtime( device_data, 'measure_temperature', value );
+            }
+        }
+        if (body.sensorDataPoints && body.sensorDataPoints.humidity) {
+            value = body.sensorDataPoints.humidity;
+            if (devices[ device_data.id ].state.humidity != value) {
+                devices[ device_data.id ].state.humidity = value;
+                Homey.manager('flow').trigger('humidity', { percentage: value });
+                Homey.manager('insights').createEntry( 'humidity', value, new Date(), function(err, success){
+                    if( err ) return Homey.error(err);
+                });
             }
         }
 
@@ -251,15 +298,17 @@ function getStateExternal( device_data, callback ) {
     }, function(err, result, body){
         if ( err && callback ) return callback(err);
 
+        var value = null;
+
         if (body.outsideTemperature) {
         // set state
-            var value = (body.outsideTemperature.celsius * 2).toFixed() / 2;
+            value = (body.outsideTemperature.celsius * 2).toFixed() / 2;
             if (devices[ device_data.id ].state.outside_temperature != value) {
                 devices[ device_data.id ].state.outside_temperature = value;
                 Homey.manager('flow').trigger('outside_temperature', { temperature: value });
                 Homey.manager('insights').createEntry( 'outside_temperature', value, new Date(), function(err, success){
                     if( err ) return Homey.error(err);
-                })
+                });
             }
         }
         if (body.solarIntensity) {
@@ -269,7 +318,7 @@ function getStateExternal( device_data, callback ) {
                 Homey.manager('flow').trigger('solar_intensity', { intensity: value });
                 Homey.manager('insights').createEntry( 'solar_intensity', value, new Date(), function(err, success){
                     if( err ) return Homey.error(err);
-                })
+                });
             }
         }
         if (body.weatherState) {
@@ -304,7 +353,7 @@ function initDevice( device_data, callback ) {
             solar_intensity: false,
             weather_state: false
         }   
-    }
+    };
 
     Homey.manager('insights').createLog( 'solar_intensity', {
         label: { en: 'Solar Intensity' },
@@ -346,16 +395,21 @@ function updateTado( device_data, json, callback ) {
     getAccessToken( function( err, access_token ) {
         device_data.access_token = access_token;
 
+        var method = 'PUT';
+
+        if (json == 'DELETE') {
+            json = {};
+            method = 'DELETE';
+        }
+
         call({
-            method          : 'PUT',
+            method          : method,
             path            : '/homes/' + device_data.homeid + '/zones/' + device_data.zoneid + '/overlay',
             access_token    : device_data.access_token,
             json            : json
         }, function(err, result, body){
             if (err) return callback(err);
 
-            log('[TADO-RESPONSE] Setting Tado data');
-            log(body);
             devices[ device_data.id ].lastUpdated = new Date();
 
             callback( null, true );
@@ -392,6 +446,8 @@ function call( options, callback ) {
             'Authorization': 'Bearer ' + options.access_token
         }
     }, function (err, result, body) {
+        log('[TADO-REQUEST] ' + options.method + ' ' + api_url + '/' + options.path);
+        log(options.json);
         log('[TADO-RESPONSE] ' + options.path);
         log(body);
         callback(err, result, body);
@@ -415,19 +471,19 @@ function registerWebhook( device_data ) {
         var device = devices[ device_data.homeid ];
         if (typeof device == 'undefined') return callback( new Error("invalid_device") );
 
-        if ( ((new Date) - device.lastUpdated) < (30 * 1000) ) {
+        if ( ((new Date()) - device.lastUpdated) < (30 * 1000) ) {
             return log("Ignored webhook, just updated the Thermostat!");
         }
 
         // TODO: don't do this is just changed value
         if (args.body.target_temperature && args.body.target_temperature != device.state.target_temperature) {
             device.state.target_temperature = args.body.target_temperature;
-            self.realtime(device_data, 'target_temperature', device.state.target_temperature)
+            self.realtime(device_data, 'target_temperature', device.state.target_temperature);
         }
 
         if (args.body.room_temperature && args.body.room_temperature != device.state.measure_temperature) {
             device.state.measure_temperature = args.body.room_temperature;
-            self.realtime(device_data, 'target_temperature', device.state.measure_temperature)
+            self.realtime(device_data, 'target_temperature', device.state.measure_temperature);
         }
 
     }, function callback(){

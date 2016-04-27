@@ -3,7 +3,7 @@
     "name": {
         "en": "Tado"
     },
-    "version": "0.1.1",
+    "version": "0.5.1",
     "compatibility": "0.8",
     "author": {
         "name": "HellHound"
@@ -51,7 +51,8 @@
             {
                 "id": "outside_temperature",
                 "title": {
-                    "en": "Outside temp changed"
+                    "en": "Outside temp changed",
+					"nl": "Buiten temperatuur is gewijzigd"
                 },
                 "tokens": [
                     {
@@ -68,13 +69,15 @@
             {
                 "id": "solar_intensity",
                 "title": {
-                    "en": "Solar intensity changed"
+                    "en": "Solar intensity changed",
+					"nl": "Intensiteit zon is gewijzigd"
                 },
                 "tokens": [
                     {
                         "name": "intensity",
                         "title": {
-                            "en": "intensity (%)"
+                            "en": "intensity (%)",
+							"nl": "intensiteit (%)"
                         },
                         "example": {
                             "en": "50"
@@ -85,13 +88,15 @@
             {
                 "id": "weather",
                 "title": {
-                    "en": "Weather changed"
+                    "en": "Weather changed",
+					"nl": "Weerstoestand is gewijzigd"
                 },
                 "tokens": [
                     {
                         "name": "state",
                         "title": {
-                            "en": "state"
+                            "en": "state",
+							"nl": "toestand"
                         },
                         "example": {
                             "en": "SUN, RAIN, <unknown>"
@@ -102,13 +107,15 @@
             {
                 "id": "weather_state",
                 "title": {
-                    "en": "Weather state changed to"
+                    "en": "Weather state changed to",
+					"nl": "Weerstoestand is gewijzigd naar"
                 },
                 "tokens": [
                     {
                         "name": "state",
                         "title": {
-                            "en": "state"
+                            "en": "state",
+							"nl": "toestand"
                         },
                         "example": {
                             "en": "SUN, RAIN, <unknown>"
@@ -124,6 +131,50 @@
                             { "id": "NIGHT_CLOUDY", "label": { "en": "Cloudy (Night)" } },
                             { "id": "CLOUDY_PARTLY", "label": { "en": "Cloudy (Partly)" } },
                             { "id": "RAIN", "label": { "en": "Raining" } },
+                            { "id": "SCATTERED_RAIN", "label": { "en": "Scattered Rain" } },
+                            { "id": "THUNDERSTORMS", "label": { "en": "Storming" } },
+                            { "id": "SUN", "label": { "en": "Sunny" } },
+                            { "id": "WINDY", "label": { "en": "Windy" } }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "humidity",
+                "title": {
+                    "en": "Humidity changed",
+					"nl": "Luchtvochtigheid is gewijzigd"
+                },
+                "tokens": [
+                    {
+                        "name": "percent",
+                        "title": {
+                            "en": "Humidity (%)"
+                        },
+                        "example": {
+                            "en": "37"
+                        }
+                    }
+                ]
+            }
+        ],
+        "conditions": [
+            {
+                "id": "weather_state",
+                "title": {
+                    "en": "Weather state !{{is|is not}}",
+					"nl": "Weerstoestand !{{is|is niet}}"
+                },
+                "args": [
+                    {
+                        "name": "current_state",
+                        "type": "dropdown",
+                        "values": [ 
+                            { "id": "CLEAR", "label": { "en": "Clear (Night)" } },
+                            { "id": "NIGHT_CLOUDY", "label": { "en": "Cloudy (Night)" } },
+                            { "id": "CLOUDY_PARTLY", "label": { "en": "Cloudy (Partly)" } },
+                            { "id": "RAIN", "label": { "en": "Raining" } },
+                            { "id": "SCATTERED_RAIN", "label": { "en": "Scattered Rain" } },
                             { "id": "THUNDERSTORMS", "label": { "en": "Storming" } },
                             { "id": "SUN", "label": { "en": "Sunny" } },
                             { "id": "WINDY", "label": { "en": "Windy" } }
@@ -131,7 +182,25 @@
                     }
                 ]
             }
-        ]
+        ],
+    	"actions": [
+        	{
+            	"id": "set_auto",
+            	"title": {
+                	"en": "Set heating to auto",
+					"nl": "Automatische verwarming"
+
+            	}
+        	},
+        	{
+            	"id": "set_off",
+            	"title": {
+                	"en": "Turn heating off",
+					"nl": "Zet verwarming af"
+
+            	}
+        	}
+    	]
     },
     "dependencies": {
         "request": "*"

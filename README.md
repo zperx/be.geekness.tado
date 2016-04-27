@@ -31,16 +31,31 @@ The Tado Homey app uses the unofficial my.tado.com API, and does not directly co
 
 - Outside temperature changed (temperature token, in increments of 0.5 °C)
 
+- [NEW 0.5.1] Humidity changed (percent token, value in percentage [0..100]). NOTE: Not available in first generation Tado devices, which were used in the alpha & beta phases.
 
-### Conditions
 
-- none at the moment, any ideas ?
+### Conditions (app)
+
+- [NEW 0.5.1] Weather state is ... (dropdown with known weather states)
 
 
 ### Actions (device)
 
-- Set the temperature
+- Set the temperature (enable manual mode)
 
+
+### Actions (app)
+
+- [NEW 0.5.1] Set heating to auto
+
+- [NEW 0.5.1] Turn heating off (frost protection enabled)
+
+
+## Todo
+
+- Support for multiple zones, e.g. multiple Tado Heating devices, or Heating & Cooling devices
+
+- Ability to use Tado's presence detection within Homey's flow
 
 
 ## Bugs & Features
@@ -49,6 +64,10 @@ If you find a bug, please use the Github Issue system for this repository to sub
 
 If you would like to have a new feature implemented, use the Github Issue system to submit your feature request.
 
+
+## Contributions
+
+- mauriceb for the additional extensive my.tado.com API information
 
 
 ## Legal

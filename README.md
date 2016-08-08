@@ -31,12 +31,12 @@ The Tado Homey app uses the unofficial my.tado.com API, and does not directly co
 
 - Outside temperature changed (temperature token, in increments of 0.5 °C)
 
-- [NEW 0.5.1] Humidity changed (percent token, value in percentage [0..100]). NOTE: Not available in first generation Tado devices, which were used in the alpha & beta phases.
+- [0.5.1] Humidity changed (percent token, value in percentage [0..100]). NOTE: Not available in first generation Tado devices, which were used in the alpha & beta phases.
 
 
 ### Conditions (app)
 
-- [NEW 0.5.1] Weather state is ... (dropdown with known weather states)
+- [0.5.1] Weather state is ... (dropdown with known weather states)
 
 
 ### Actions (device)
@@ -46,9 +46,9 @@ The Tado Homey app uses the unofficial my.tado.com API, and does not directly co
 
 ### Actions (app)
 
-- [NEW 0.5.1] Set heating to auto
+- [0.5.1] Set heating to auto
 
-- [NEW 0.5.1] Turn heating off (frost protection enabled)
+- [0.5.1] Turn heating off (frost protection enabled)
 
 
 ## Todo
@@ -60,12 +60,20 @@ The Tado Homey app uses the unofficial my.tado.com API, and does not directly co
 - Trigger / Condition for when Tado switches between HOME / AWAY / SLEEP
 
 
+## Changelog
+
+- 0.5.2 Bugfixes and compatibility update
+
+- 0.5.1 New actions, triggers and conditions
+
+- 0.5.0 Initial stable version
+
+
 ## Bugs & Features
 
 If you find a bug, please use the Github Issue system for this repository to submit the details of your bug report.
 
 If you would like to have a new feature implemented, use the Github Issue system to submit your feature request.
-
 
 ## Contributions
 

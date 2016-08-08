@@ -57,6 +57,8 @@ The Tado Homey app uses the unofficial my.tado.com API, and does not directly co
 
 - Ability to use Tado's presence detection within Homey's flow
 
+- Trigger / Condition for when Tado switches between HOME / AWAY / SLEEP
+
 
 ## Bugs & Features
 

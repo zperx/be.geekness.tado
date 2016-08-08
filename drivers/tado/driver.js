@@ -255,7 +255,7 @@ function getStateInternal( device_data, callback ) {
 
         var value = null;
 
-        if (body.setting && body.setting.temperature) {
+        if (body !== undefined && body.setting !== undefined && body.setting.temperature !== undefined) {
         // set state
             value = (body.setting.temperature.celsius * 2).toFixed() / 2;
             if (devices[ device_data.id ].state.target_temperature != value) {
@@ -263,14 +263,14 @@ function getStateInternal( device_data, callback ) {
                 self.realtime( device_data, 'target_temperature', value );
             }
         }
-        if (body.sensorDataPoints && body.sensorDataPoints.insideTemperature) {
+        if (body !== undefined && body.sensorDataPoints !== undefined && body.sensorDataPoints.insideTemperature !== undefined) {
             value = (body.sensorDataPoints.insideTemperature.celsius * 2).toFixed() / 2;
             if (devices[ device_data.id ].state.measure_temperature != value) {
                 devices[ device_data.id ].state.measure_temperature = value;
                 self.realtime( device_data, 'measure_temperature', value );
             }
         }
-        if (body.sensorDataPoints && body.sensorDataPoints.humidity) {
+        if (body !== undefined && body.sensorDataPoints !== undefined && body.sensorDataPoints.humidity !== undefined) {
             value = body.sensorDataPoints.humidity;
             if (devices[ device_data.id ].state.humidity != value) {
                 devices[ device_data.id ].state.humidity = value;
@@ -300,7 +300,7 @@ function getStateExternal( device_data, callback ) {
 
         var value = null;
 
-        if (body.outsideTemperature) {
+        if (body !== undefined && body.outsideTemperature !== undefined) {
         // set state
             value = (body.outsideTemperature.celsius * 2).toFixed() / 2;
             if (devices[ device_data.id ].state.outside_temperature != value) {
@@ -311,7 +311,7 @@ function getStateExternal( device_data, callback ) {
                 });
             }
         }
-        if (body.solarIntensity) {
+        if (body !== undefined && body.solarIntensity !== undefined) {
             value = body.solarIntensity.percentage;
             if (devices[ device_data.id ].state.solar_intensity != value) {
                 devices[ device_data.id ].state.solar_intensity = value;
@@ -321,7 +321,7 @@ function getStateExternal( device_data, callback ) {
                 });
             }
         }
-        if (body.weatherState) {
+        if (body !== undefined && body.weatherState !== undefined) {
             value = body.weatherState.value;
             if (devices[ device_data.id ].state.weather_state != value) {
                 devices[ device_data.id ].state.weather_state = value;
@@ -357,6 +357,15 @@ function initDevice( device_data, callback ) {
 
     Homey.manager('insights').createLog( 'solar_intensity', {
         label: { en: 'Solar Intensity' },
+        type: 'number',
+        units: { en: '%' },
+        decimals: 0
+    }, function callback(err , success){
+        if( err ) return Homey.error(err);
+    });
+
+    Homey.manager('insights').createLog( 'humidity', {
+        label: { en: 'Humidity' },
         type: 'number',
         units: { en: '%' },
         decimals: 0

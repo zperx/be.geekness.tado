@@ -1,6 +1,8 @@
-# be.geekness.tado
+# Tado app for Homey
 
-Unofficial Tado thermostat app for Homey.
+Unofficial Tado thermostat app for <a href="http://www.athom.nl">Homey</a>.
+
+<span class="badge-paypal"><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9JKAQMYRN36EE" title="Donate to this project using Paypal"><img src="https://img.shields.io/badge/paypal-donate-blue.svg" alt="PayPal donate button" /></a></span>
 
 ## Configuration
 

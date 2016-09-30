@@ -4,12 +4,15 @@ var path            = require('path');
 var request         = require('request');
 var extend          = require('util')._extend;
 var api_url         = 'https://my.tado.com/api/v2';
-var debug = false;
+var debug = true;
+var loggedin = false;
 var devices = {};
 
 var self = module.exports = {
 
     init: function( devices_data, callback ) {
+
+        log('[TADO] Initializing.. ' + devices_data.length + ' devices found.');
 
         devices_data.forEach( function( device_data ){
             devices[ device_data.id ] = {
@@ -87,16 +90,21 @@ var self = module.exports = {
         target_temperature: {
             get: function( device_data, callback ){
 
-                log('[TADO] Get Target Temperature');
+                if (!loggedin) return callback( new Error("no_session") );
+
                 var device = devices[ device_data.id ];
 
                 if (typeof device == 'undefined') return callback( new Error("invalid_device") );
+
+                log('[TADO] Get Target Temperature (= ' + device.state.target_temperature.toString() + ')');
 
                 callback( null, device.state.target_temperature );
             },
             set: function( device_data, target_temperature, callback ){
 
-                log('[TADO] Set Target Temperature');
+                if (!loggedin) return callback( new Error("no_session") );
+
+                log('[TADO] Set Target Temperature to ' + target_temperature.toString());
                 var device = devices[ device_data.id ];
 
                 if (typeof device == 'undefined') return callback( new Error("invalid_device") );
@@ -130,6 +138,8 @@ var self = module.exports = {
         measure_temperature: {
             get: function( device_data, callback ) {
                 
+                if (!loggedin) return callback( new Error("no_session") );
+
                 log('[TADO] Get Measure Temperature');
                 var device = devices[ device_data.id ];
                 if (typeof device == 'undefined') return callback( new Error("invalid_device") );
@@ -206,6 +216,9 @@ function getAccessToken( callback ) {
             log('[TADO-RESPONSE] Getting access token');
             log(body);
         }
+
+        loggedin = true;
+
         return callback( null, body.access_token );
     });
 
@@ -213,6 +226,7 @@ function getAccessToken( callback ) {
 
 
 function getHomeId( device, callback ) {
+    if (!loggedin) return;
     log('[TADO] Getting home id');
     log(device);
 
@@ -229,6 +243,7 @@ function getHomeId( device, callback ) {
 }
 
 function getState( device_data, callback ) {
+    if (!loggedin) return;
 
     callback = callback || function(){};
 
@@ -253,19 +268,24 @@ function getStateInternal( device_data, callback ) {
     }, function(err, result, body){
         if ( err && callback ) return callback(err);
 
+        if (body.errors !== undefined && body.errors[0].code == 'unauthorized') {
+            loggedin = false;
+            return;
+        }
+
         var value = null;
 
         if (body !== undefined && body.setting !== undefined && body.setting.temperature !== undefined) {
         // set state
-            value = (body.setting.temperature.celsius * 2).toFixed() / 2;
-            if (devices[ device_data.id ].state.target_temperature != value) {
+            if (body.setting.temperature.celsius !== undefined) {
+                value = (body.setting.temperature.celsius * 2).toFixed() / 2;
                 devices[ device_data.id ].state.target_temperature = value;
                 self.realtime( device_data, 'target_temperature', value );
             }
         }
         if (body !== undefined && body.sensorDataPoints !== undefined && body.sensorDataPoints.insideTemperature !== undefined) {
-            value = (body.sensorDataPoints.insideTemperature.celsius * 2).toFixed() / 2;
-            if (devices[ device_data.id ].state.measure_temperature != value) {
+            if (body.sensorDataPoints.insideTemperature.celsius !== undefined) {
+                value = (body.sensorDataPoints.insideTemperature.celsius * 2).toFixed() / 2;
                 devices[ device_data.id ].state.measure_temperature = value;
                 self.realtime( device_data, 'measure_temperature', value );
             }

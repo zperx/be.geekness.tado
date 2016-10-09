@@ -64,7 +64,7 @@ The Tado Homey app uses the unofficial my.tado.com API, and does not directly co
 
 ## Changelog
 
-- 0.5.3 More bugfixes: fix humidity insight, fix pairing issue
+- 0.5.3 More bugfixes: fix humidity insight, fix pairing issue, fix loss of card values after Homey/app restarts
 
 - 0.5.2 Bugfixes and compatibility update
 

@@ -51,22 +51,22 @@ var self = module.exports = {
             callback( null, false );
         });
 
-		Homey.manager('flow').on('action.set_auto', function( callback, args ){
+        Homey.manager('flow').on('action.set_auto', function( callback, args ){
             for (var i in devices) {
                 if (devices[i].data) {
                     updateTado( devices[i].data, 'DELETE');
                 }
             };
 
-    		callback( null, true ); 
-		});
+            callback( null, true ); 
+        });
 
-		Homey.manager('flow').on('action.set_off', function( callback, args ){
+        Homey.manager('flow').on('action.set_off', function( callback, args ){
             for (var i in devices) {
                 if (devices[i].data) {
                     updateTado( devices[i].data, {
-           		        setting: {
-                	        type: "HEATING",
+                        setting: {
+                            type: "HEATING",
                             power: "OFF",
                         },
                         termination: {type: "MANUAL"}
@@ -74,8 +74,8 @@ var self = module.exports = {
                 }
             };
 
-    		callback( null, true ); 
-		});
+            callback( null, true ); 
+        });
 
         callback();
 
@@ -96,7 +96,7 @@ var self = module.exports = {
 
                 if (typeof device == 'undefined') return callback( new Error("invalid_device") );
 
-                log('[TADO] Get Target Temperature (= ' + device.state.target_temperature.toString() + ')');
+                log('[TADO] Capability: Get Target Temperature (= ' + device.state.target_temperature.toString() + ')');
 
                 callback( null, device.state.target_temperature );
             },
@@ -104,7 +104,7 @@ var self = module.exports = {
 
                 if (!loggedin) return callback( new Error("no_session") );
 
-                log('[TADO] Set Target Temperature to ' + target_temperature.toString());
+                log('[TADO] Capability: Set Target Temperature to ' + target_temperature.toString());
                 var device = devices[ device_data.id ];
 
                 if (typeof device == 'undefined') return callback( new Error("invalid_device") );
@@ -140,9 +140,10 @@ var self = module.exports = {
                 
                 if (!loggedin) return callback( new Error("no_session") );
 
-                log('[TADO] Get Measure Temperature');
                 var device = devices[ device_data.id ];
                 if (typeof device == 'undefined') return callback( new Error("invalid_device") );
+
+                log('[TADO] Capability: Get Measure Temperature');
 
                 callback( null, device.state.measure_temperature );
             }
@@ -152,6 +153,23 @@ var self = module.exports = {
     pair: function( socket ) {
 
         log('[TADO] Pairing start');
+
+        socket.on('start', () => {
+            Homey.log('NetAtmo pairing has started...');
+
+            getAccessToken( function( err, access_token ) {
+                if ( err ) log(err);
+
+                newdevice.name                 = 'Tado';
+                newdevice.data.id              = 'Tado';
+                newdevice.data.access_token    = access_token;
+
+                log('[TADO] Authorized.');
+
+                socket.emit( 'authorized', true );
+            });
+        });
+
 
         var newdevice = {
             name: undefined,
@@ -182,15 +200,6 @@ var self = module.exports = {
             callback( null, true );
         });
 
-        getAccessToken( function( err, access_token ) {
-            if ( err ) log(err);
-
-            newdevice.name                 = 'Tado';
-            newdevice.data.id              = 'Tado';
-            newdevice.data.access_token    = access_token;
-
-            socket.emit( 'authorized', true );
-        });
     }
 };
 
@@ -283,15 +292,15 @@ function getStateInternal( device_data, callback ) {
                 self.realtime( device_data, 'target_temperature', value );
             }
         }
-        if (body !== undefined && body.sensorDataPoints !== undefined && body.sensorDataPoints.insideTemperature !== undefined) {
-            if (body.sensorDataPoints.insideTemperature.celsius !== undefined) {
-                value = (body.sensorDataPoints.insideTemperature.celsius * 2).toFixed() / 2;
+        if (body !== undefined && body.sensorDataPoints !== undefined && body.sensorDataPoints.insideTemperature !== undefined && body.sensorDataPoints.insideTemperature.celsius !== undefined) {
+            value = (body.sensorDataPoints.insideTemperature.celsius * 2).toFixed() / 2;
+            if (devices[ device_data.id ].state.measure_temperature != value) {
                 devices[ device_data.id ].state.measure_temperature = value;
                 self.realtime( device_data, 'measure_temperature', value );
             }
         }
-        if (body !== undefined && body.sensorDataPoints !== undefined && body.sensorDataPoints.humidity !== undefined) {
-            value = body.sensorDataPoints.humidity;
+        if (body !== undefined && body.sensorDataPoints !== undefined && body.sensorDataPoints.humidity !== undefined && body.sensorDataPoints.humidity.percentage !== undefined) {
+            value = body.sensorDataPoints.humidity.percentage;
             if (devices[ device_data.id ].state.humidity != value) {
                 devices[ device_data.id ].state.humidity = value;
                 Homey.manager('flow').trigger('humidity', { percentage: value });

@@ -4,7 +4,7 @@ var path            = require('path');
 var request         = require('request');
 var extend          = require('util')._extend;
 var api_url         = 'https://my.tado.com/api/v2';
-var debug = true;
+var debug = false;
 var loggedin = false;
 var devices = {};
 
@@ -19,9 +19,15 @@ var self = module.exports = {
                 data    : device_data,
                 state   : {}
             };
-            getState( device_data );
         });
     
+        getAccessToken( function( err, access_token ) {
+            for (var device_id in devices) {
+                devices[device_id].data.access_token = access_token;
+                getState( devices[device_id].data, callback );
+            }
+        });
+
         // update info every 5 minutes
         setInterval(function(){
             log('[TADO] Recurring Interval');
@@ -77,8 +83,6 @@ var self = module.exports = {
             callback( null, true ); 
         });
 
-        callback();
-
     },
 
     deleted: function( device_data ) {
@@ -90,11 +94,10 @@ var self = module.exports = {
         target_temperature: {
             get: function( device_data, callback ){
 
-                if (!loggedin) return callback( new Error("no_session") );
-
                 var device = devices[ device_data.id ];
 
                 if (typeof device == 'undefined') return callback( new Error("invalid_device") );
+                if (device.state === undefined || device.state.target_temperature === undefined) return callback( new Error('Device initialization unfinished') );
 
                 log('[TADO] Capability: Get Target Temperature (= ' + device.state.target_temperature.toString() + ')');
 
@@ -138,12 +141,10 @@ var self = module.exports = {
         measure_temperature: {
             get: function( device_data, callback ) {
                 
-                if (!loggedin) return callback( new Error("no_session") );
-
                 var device = devices[ device_data.id ];
                 if (typeof device == 'undefined') return callback( new Error("invalid_device") );
 
-                log('[TADO] Capability: Get Measure Temperature');
+                log('[TADO] Capability: Get Measure Temperature (= ' + device.state.measure_temperature + ')');
 
                 callback( null, device.state.measure_temperature );
             }
@@ -259,7 +260,7 @@ function getState( device_data, callback ) {
     log('[TADO] Getting state (target temp, current temp)');
     log(device_data);
 
-    getStateInternal( device_data );
+    getStateInternal( device_data, callback );
 
     getStateExternal( device_data );
 

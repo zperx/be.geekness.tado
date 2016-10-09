@@ -284,10 +284,10 @@ function getStateInternal( device_data, callback ) {
 
         var value = null;
 
-        if (body !== undefined && body.setting !== undefined && body.setting.temperature !== undefined) {
+        if (body !== undefined && body.setting !== undefined && body.setting.temperature !== undefined && body.setting.temperature.celsius !== undefined) {
         // set state
-            if (body.setting.temperature.celsius !== undefined) {
-                value = (body.setting.temperature.celsius * 2).toFixed() / 2;
+            value = (body.setting.temperature.celsius * 2).toFixed() / 2;
+            if (devices[ device_data.id ].state.target_temperature != value) {
                 devices[ device_data.id ].state.target_temperature = value;
                 self.realtime( device_data, 'target_temperature', value );
             }

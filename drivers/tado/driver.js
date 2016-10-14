@@ -20,7 +20,7 @@ var self = module.exports = {
                 state   : {}
             };
         });
-    
+
         getAccessToken( function( err, access_token ) {
             for (var device_id in devices) {
                 devices[device_id].data.access_token = access_token;
@@ -82,6 +82,10 @@ var self = module.exports = {
 
             callback( null, true ); 
         });
+
+        if (devices_data.length === 0) {
+            callback();
+        }
 
     },
 
@@ -153,10 +157,10 @@ var self = module.exports = {
 
     pair: function( socket ) {
 
-        log('[TADO] Pairing start');
+        log('[TADO] Pairing Init');
 
         socket.on('start', () => {
-            Homey.log('NetAtmo pairing has started...');
+            log('[TADO] pairing has started...');
 
             getAccessToken( function( err, access_token ) {
                 if ( err ) log(err);

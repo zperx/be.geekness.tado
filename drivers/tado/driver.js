@@ -4,7 +4,7 @@ var path            = require('path');
 var request         = require('request');
 var extend          = require('util')._extend;
 var api_url         = 'https://my.tado.com/api/v2';
-var debug = false;
+var debug = true;
 var loggedin = false;
 var devices = {};
 

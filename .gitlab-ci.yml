@@ -1,0 +1,7 @@
+stages:
+  - deploy
+
+  Git MIRROR:
+    stage: deploy
+      script:
+          - git push --mirror https://GH_USER:GH_PASS@github.com/hellhond/be.geekness.tado.git

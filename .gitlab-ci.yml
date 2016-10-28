@@ -4,4 +4,4 @@ stages:
 mirror:
     stage: deploy
     script:
-        - git push --mirror https://GH_USER:GH_PASS@github.com/hellhond/be.geekness.tado.git
+        - git push --mirror https://$GH_USER:$GH_PASS@github.com/hellhond/be.geekness.tado.git

@@ -3,7 +3,7 @@
     "name": {
         "en": "Tado"
     },
-    "version": "0.5.5",
+    "version": "0.5.7",
     "compatibility": ">=0.8 || 1.x",
     "author": {
         "name": "HellHound"
@@ -23,7 +23,10 @@
                 "en": "Tado"
             },
             "class": "thermostat",
-            "capabilities": [ "target_temperature", "measure_temperature" ],
+            "capabilities": [ "target_temperature", 
+			     "measure_temperature",
+			     "measure_humidity"
+			    ],
             "images": {
                 "large": "drivers/tado/assets/images/large.png",
                 "small": "drivers/tado/assets/images/small.png"
